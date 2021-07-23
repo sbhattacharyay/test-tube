@@ -436,42 +436,7 @@ class SlurmCluster(AbstractCluster):
             '#################\n'
         ]
         sub_commands.extend(command)
-
-        # pick memory per node
-        command = [
-            '# memory per node',
-            '#SBATCH --mem={}'.format(self.memory_mb_per_node),
-            '#################\n'
-        ]
-        sub_commands.extend(command)
-
-        # add signal command to catch job termination
-        command = [
-            '# slurm will send a signal this far out before it kills the job',
-            f'#SBATCH --signal=USR1@{self.minutes_to_checkpoint_before_walltime * 60}',
-            '#################\n'
-        ]
-
-        sub_commands.extend(command)
-
-        # Subscribe to email if requested
-        mail_type = []
-        if self.notify_on_end:
-            mail_type.append('END')
-        if self.notify_on_fail:
-            mail_type.append('FAIL')
-        if len(mail_type) > 0:
-            mail_type_query = [
-                '# Have SLURM send you an email when the job ends or fails',
-                '#SBATCH --mail-type={}'.format(','.join(mail_type))
-            ]
-            sub_commands.extend(mail_type_query)
-
-            email_query = [
-                '#SBATCH --mail-user={}'.format(self.email),
-            ]
-            sub_commands.extend(email_query)
-
+        
         # add custom sbatch commands
         sub_commands.append('\n')
         for (cmd, value, comment) in self.slurm_commands:
